@@ -177,7 +177,7 @@ The above code block defines a function that connects to the couchbase database 
 We will set up this connection in our `server.go` file to establish a link to the Couchbase database as the server starts.
 
 
-### Modify the contents of the server.go file using the code snippets highlighted in yellow.
+### Modify the contents of the server.go file using the code snippets below.
 ```go
 package main
 
