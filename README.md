@@ -285,6 +285,45 @@ func (r *queryResolver) Movies(ctx context.Context) ([]*model.Movie, error) {
 ```
 Now that we have successfully connected our Couchbase database and set up our resolvers, we can test the project.
 
+
+## Step-7: Test Your Golang GraphQL API
+In our final step, we will be testing our Golang GraphQL API’s query and mutation.
+
+Start your Golang server `go run server.go` or `go build` and head over to your browser, then navigate to http://localhost:8080 to access the in-built GraphQL playground.
+
+### To test for Mutations, paste the GraphQL Query below into the playground editor to insert a new movie object.
+```go
+mutation createMovie {
+ createMovie(
+   input: {
+     title: "Telerecharge"
+     url: "https://telerecharge.com"
+   }
+ ){
+   id
+  title
+ }
+}
+```
+![create movie](./screens/13_create.png)
+
+
+### To test Queries, paste the GraphQL Query below into the playground editor to fetch all created movie records.
+```go
+query getMovies {
+ movies {
+  	 id
+     title
+     url
+     releaseDate
+ }
+}
+```
+![create movie](./screens/14_list_movies.png)
+
+
+### ********** YES , WE ARE DONE **********
+
 ## Resource
 * [Tutorial](https://hasura.io/blog/building-a-graphql-api-with-golang-postgres-and-hasura)
 * [gqlgen](https://github.com/99designs/gqlgen)
