@@ -101,7 +101,7 @@ The command above generates the skeleton of two GraphQL resolvers: one `Query` r
 ## Step 4: Provision Your Couchbase Database on localhost
 We will be creating a NoSQL couchbase database on localhost to store data for our movie application.
 
-### Install couchbase client package
+### Install couchbase database driver package
 > `go get -u github.com/mateors/mcb`
 
 ![mcb client for couchbase](./screens/9_mcb_couchbase_client_installation.png)
@@ -117,12 +117,124 @@ Couchbase is a flexible nosql database supports no schema, so we do not need to 
 * Collection: `movie`
 
 #### Database Scope creation
-> CREATE SCOPE bagnbrand.graphql;
+> `CREATE SCOPE bagnbrand.graphql;`
 ![scope](./screens/10_database_scope_creation.png)
 
 #### Database Collection creation
-> CREATE COLLECTION bagnbrand.graphql.movie;
+> `CREATE COLLECTION bagnbrand.graphql.movie;`
 ![collection](./screens/11_collection_movie.png)
+
+
+## Step 5: Connect Your Couchbase Database to Golang
+We'll use the `Database credentials` we mentioned above to connect our Couchbase database to the Golang project in this step.
+
+### Create an a `.env` file in the root of your project folder and paste the Couchbase `Database credentials` as shown below.
+```go
+HOST=localhost
+DBUSER=mateors
+DBPASS=Test123@
+BUCKET=bagnbrand
+SCOPE=graphql
+COLLECTION=movie
+```
+
+> `go get github.com/joho/godotenv`
+![godotenv package](./screens/12_env_package.png)
+
+We need a database driver to connect to the couchbase database, we already installed mcb package for that. godotenv is a Golang package that allows you to load environment credentials from an a.env file into your app.
+
+### Open your terminal and execute the tidy command to add any other missing dependencies.
+> `go mod tidy`
+
+### In the graph project folder, create a `db.go` file and paste the following code block.
+```go
+package graph
+
+import (
+	"os"
+
+	"github.com/mateors/mcb"
+)
+
+func Connect() *mcb.DB {
+
+	host := os.Getenv("HOST")
+	username := os.Getenv("USERNAME")
+	password := os.Getenv("PASSWORD")
+	//bucket := os.Getenv("BUCKET")
+	//scope := os.Getenv("SCOPE")
+
+	db := mcb.Connect(host, username, password, false)
+	res, err := db.Ping()
+	if err != nil {
+		panic(res)
+	}
+	return db
+}
+```
+The above code block defines a function that connects to the couchbase database using the `database credentials` specified in the environment variable.
+
+We will set up this connection in our `server.go` file to establish a link to the Couchbase database as the server starts.
+
+
+### Modify the contents of the server.go file using the code snippets highlighted in yellow.
+```go
+package main
+
+import (
+	"graphql/graph"
+	"graphql/graph/generated"
+	"log"
+	"net/http"
+	"os"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/joho/godotenv"
+)
+
+const defaultPort = "8080"
+var bucketName string
+var scopeName string
+
+func init() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	bucketName = os.Getenv("BUCKET")
+	scopeName = os.Getenv("SCOPE")
+}
+
+func main() {
+
+	db := graph.Connect()
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{DB: db}}))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+```
+The above code block calls the Connect function in the db.go file and stores that connection within the Resolver struct
+
+#### In the graph folder, navigate to the resolver.go file to add the DB connection field in the Resolver struct as a dependency.
+
+```go
+package graph
+
+import "github.com/mateors/mcb"
+
+type Resolver struct {
+	DB *mcb.DB
+}
+```
+We have successfully configured our Couchbase database in our Golang project. In the next step, we will be implementing our resolver functions.
 
 ## Resource
 * [Tutorial](https://hasura.io/blog/building-a-graphql-api-with-golang-postgres-and-hasura)
