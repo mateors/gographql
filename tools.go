@@ -1,3 +1,5 @@
-package tools
+package main
 
-import _ "github.com/99designs/gqlgen"
+//package tools
+
+// import _ "github.com/99designs/gqlgen"

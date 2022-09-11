@@ -236,6 +236,55 @@ type Resolver struct {
 ```
 We have successfully configured our Couchbase database in our Golang project. In the next step, we will be implementing our resolver functions.
 
+
+## Step-6: Implement Your Generated Resolvers
+This step will implement the logic for the resolver methods in the `schema.resolvers.go` file.
+
+#### Paste the following code snippet in the createMovie function; 
+#### it takes in the movie object as input and inserts it into the Couchbase database.
+
+```go
+// schema.resolvers.go
+func (r *mutationResolver) CreateMovie(ctx context.Context, input model.NewMovie) (*model.Movie, error) {
+
+	movie := model.Movie{
+		Title: input.Title,
+		URL:   input.URL,
+	}
+	docId := fmt.Sprintf("101_%v", movie.ID)
+	mres := r.DB.InsertIntoBucket(docId, "bagnbrand.graphql.movie", &movie)
+	if mres.Status != "success" {
+		return nil, fmt.Errorf("%+v", mres.Errors)
+	}
+	return &movie, nil
+}
+```
+#### Paste the following code snippet in the Movies function. 
+#### The function retrieves a collection of movies from the Postgres database based on the defined movie model.
+
+```go
+// Movies is the resolver for the movies field.
+func (r *queryResolver) Movies(ctx context.Context) ([]*model.Movie, error) {
+
+	var movies []*model.Movie
+	mres := r.DB.Query("SELECT id,title,url,releaseDate FROM bagnbrand.graphql.movie;")
+	if mres.Status != "success" {
+		return nil, fmt.Errorf("%+v", mres.Errors)
+	}
+	rows := mres.GetRows()
+	for _, row := range rows {
+		var movie = &model.Movie{}
+		movie.ID = fmt.Sprint(row["id"])
+		movie.ReleaseDate = fmt.Sprint(row["releaseDate"])
+		movie.Title = fmt.Sprint(row["title"])
+		movie.URL = fmt.Sprint(row["url"])
+		movies = append(movies, movie)
+	}
+	return movies, nil
+}
+```
+Now that we have successfully connected our Couchbase database and set up our resolvers, we can test the project.
+
 ## Resource
 * [Tutorial](https://hasura.io/blog/building-a-graphql-api-with-golang-postgres-and-hasura)
 * [gqlgen](https://github.com/99designs/gqlgen)
