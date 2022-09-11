@@ -98,6 +98,32 @@ The command above generates the skeleton of two GraphQL resolvers: one `Query` r
 
 ![generated code for resolvers](./screens/8_resolver_code.png)
 
+## Step 4: Provision Your Couchbase Database on localhost
+We will be creating a NoSQL couchbase database on localhost to store data for our movie application.
+
+### Install couchbase client package
+> `go get -u github.com/mateors/mcb`
+
+![mcb client for couchbase](./screens/9_mcb_couchbase_client_installation.png)
+
+Couchbase is a flexible nosql database supports no schema, so we do not need to create any predefined schema for our project, we will use the `schema.graphqls` file model instead to create a `collection` called `movie` where all our movie will be stored.
+
+### Database credentials
+* Host : `localhost`
+* Username: `mateors`
+* Password `Test123@`
+* Bucket: `bagnbrand`
+* Scope: `graphql`
+* Collection: `movie`
+
+#### Database Scope creation
+> CREATE SCOPE bagnbrand.graphql;
+![scope](./screens/10_database_scope_creation.png)
+
+#### Database Collection creation
+> CREATE COLLECTION bagnbrand.graphql.movie;
+![collection](./screens/11_collection_movie.png)
+
 ## Resource
 * [Tutorial](https://hasura.io/blog/building-a-graphql-api-with-golang-postgres-and-hasura)
 * [gqlgen](https://github.com/99designs/gqlgen)
