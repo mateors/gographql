@@ -57,7 +57,30 @@ Open http://localhost:8080/ in your browser to test the GraphQL playground.
 ## Step-2 Define Your Graphql Schema
 A GraphQL schema defines the data requirements that clients can request from the GraphQL API. In this next step, we will describe the GraphQL schema for our Movie API by modifying the schema. graphqls file.
 
+Navigate to the `schema.graphqls` file and replace the contents with following code, defining the Query and Mutation schema for our Movie API.
 
+```go
+type Movie {
+ id: ID!
+ title: String!
+ url: String!
+ releaseDate: String!
+}
+
+type Query {
+ movies: [Movie!]!
+}
+
+input NewMovie {
+ title: String!
+ url: String!
+}
+
+type Mutation {
+ createMovie(input: NewMovie!): Movie!
+}
+```
+The code above defines a Query and a Mutation type. The Query type retrieves all movies, and the Mutation type contains a createMovie method that takes in a new movie object as its input parameter.
 
 ## Resource
 * [Tutorial](https://hasura.io/blog/building-a-graphql-api-with-golang-postgres-and-hasura)
