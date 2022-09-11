@@ -47,10 +47,12 @@ After successful execution of the above command you will have the following reso
 
 ![project structure](./screens/5_project_structure.png)
 
-### Build the project using the following command
+### Run the project using the following command
 > `go run server.go`
 
 ![server](./screens/6_server.png)
+
+Open http://localhost:8080/ in your browser to test the GraphQL playground.
 
 ## Step-2 Define Your Graphql Schema
 A GraphQL schema defines the data requirements that clients can request from the GraphQL API. In this next step, we will describe the GraphQL schema for our Movie API by modifying the schema. graphqls file.
