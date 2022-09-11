@@ -80,7 +80,23 @@ type Mutation {
  createMovie(input: NewMovie!): Movie!
 }
 ```
-The code above defines a Query and a Mutation type. The Query type retrieves all movies, and the Mutation type contains a createMovie method that takes in a new movie object as its input parameter.
+The code above defines a `Query` and a `Mutation` type. The `Query` type retrieves all movies, and the Mutation type contains a `createMovie` method that takes in a new movie object as its input parameter.
+
+
+## Step 3: Generate Your GraphQL Resolvers
+GraphQL resolvers are functions that generate responses for a GraphQL query. The gqlgen library automatically generates resolvers based on the schema's defined `schema.graphqls` file, so you don't need to write the boilerplate code manually for generating resolvers.
+
+* Navigate to the `schema.resolvers.go` file and delete the file's contents.
+* Execute the following command to use the `gqlgen code generation feature` to `generate resolvers` based on your defined schema.
+
+### Generate resolvers based on your schema.graphqls file
+> `go run github.com/99designs/gqlgen generate`
+
+![generate resolvers](./screens/7_generate_resolvers.png)
+
+The command above generates the skeleton of two GraphQL resolvers: one `Query` resolver function and one `Mutation` resolver function. The `createMovie` method will implement the movie creation logic, and the function `Movies` will contain the movie retrieval logic. Later in this tutorial, we will come back to implement the logic for these resolvers.
+
+![generated code for resolvers](./screens/8_resolver_code.png)
 
 ## Resource
 * [Tutorial](https://hasura.io/blog/building-a-graphql-api-with-golang-postgres-and-hasura)
